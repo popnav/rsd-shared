@@ -82,6 +82,7 @@ class BestiaryService extends EventEmitter {
         this.extendedNamePair = []
         this.searchNamePair = []
 
+        //needed? - determine if stats.data.details.creatureType is actually consumed
         this.stats = {
             data: {
                 details: {
@@ -157,6 +158,8 @@ class BestiaryService extends EventEmitter {
                     this.namePair.push(pair)
 
                     let traits = !!b.system.traits && !!b.system.traits.value ? b.system.traits.value : []
+                    this.adjustAlignment(traits, b.system.details.alignment)
+
                     let description = ''
 
                     if (b.type == 'hazard') {
@@ -170,21 +173,16 @@ class BestiaryService extends EventEmitter {
                     } else {
                         description = !!b.system.details.privateNotes ? b.system.details.privateNotes : ''
                     }
-                    
+
                     let extendedPair = {
                         ...pair,
                         level: b.system.details.level.value,
                         size: !!b.system.traits.size && !!b.system.traits.size.value ? b.system.traits.size.value : {value: 'med'},
-                        creatureType: b.system.details.creatureType,
                         rarity: b.system.traits.rarity,
                         traits: traits,
-                        alignment: (!!b.system.details.alignment && b.system.details.alignment.value.toUpperCase()) || '',
                         source: '',
                     }
 
-                    if (b.system.details.alignment && !!b.system.details.alignment.value) {
-                        extendedPair.alignment = b.system.details.alignment.value
-                    }
                     if (b.system.details.source && !!b.system.details.source.value) {
                         extendedPair.source = b.system.details.source.value
                     } else if (b.system.source && !!b.system.source.value) {
@@ -299,6 +297,24 @@ class BestiaryService extends EventEmitter {
                 }
             })
         })
+    }
+
+    //if alignment actually has a value, we (expand it from something
+    //like 'CG' to 'CHAOTIC GOOD' and) add it to the traits.
+    adjustAlignment(traits, alignment) {
+        if (!!alignment?.value) {
+            let alignmentLower = alignment.value.toLowerCase()
+            if (['lg','ln','le','lawful'].includes(alignmentLower) && !traits.includes('lawful'))
+                traits.push('lawful')
+            if (['cg','cn','ce','chaotic'].includes(alignmentLower) && !traits.includes('chaotic'))
+                traits.push('chaotic')
+            if (['ng','nn','ne','ln','cn','n','neutral'].includes(alignmentLower) && !traits.includes('neutral'))
+                traits.push('neutral')
+            if (['lg','ng','cg','good'].includes(alignmentLower) && !traits.includes('good'))
+                traits.push('good')
+            if (['le','ne','ce','evil'].includes(alignmentLower) && !traits.includes('evil'))
+                traits.push('evil')
+        }
     }
 
     flushCustomCreatures() {
@@ -506,48 +522,26 @@ class BestiaryService extends EventEmitter {
         return !!item && item.length > 0 ? item.charAt(0).toUpperCase() + item.slice(1) : ''
     }
 
+//TODO- is this loadCreatureTypes() even really used any longer?
+//      just for debugging, maybe?  I don't see a call to getCreatureTypes() (i.e.
+//      I don't see any use of stats.data.details.creatureType- which is what this method produces).
+//      And, with recent changes to vtt pf2e data, it turns out this is only really doing anything
+//      for custom creature info in older format.
+    //load known creature types into stats.data.details.creatureType
     loadCreatureTypes() {
-        let fieldParts = [
-            'system',
-            'details',
-            'creatureType'
-        ]
-
-        let stats = []
+        let allCreatureTypesForAllBeasts = []
 
         if (this.ref) {
+            //for each bestiary (which can have multiple beasts each with multiple creature types)
             Object.keys(this.ref).forEach(k => {
                 this.ref[k].forEach(b => {
-                    let beastValue = b
-                    let hasField = true
-
-                    fieldParts.forEach(fp => {
-                        if (!!beastValue && !!beastValue[fp] && hasField) {
-                            beastValue = beastValue[fp]
-                        } else {
-                            beastValue = null
-                            hasField = false
-                        }
-                    })
-
-                    if (!!beastValue) {
-                        if (beastValue.includes(',')) {
-                            let beastParts = beastValue.replaceAll(' ','').split(',')
-                            beastParts.forEach(bp => {
-                                if (!stats.includes(this.capitalize(bp))) {
-                                    stats.push(this.capitalize(bp))
-                                }
-                            })
-                        } else if (!stats.includes(this.capitalize(beastValue))) {
-                            stats.push(this.capitalize(beastValue))
-                        }
-                    }
-
+                    if (!!b?.system?.details?.creatureType)
+                        allCreatureTypesForAllBeasts.push(...this.simpleCreatureTypes(b?.system?.details?.creatureType))
                 })
             })
         }
 
-        this.stats.data.details.creatureType = stats
+        this.stats.data.details.creatureType = allCreatureTypesForAllBeasts
 
         // Fix the fact there is no "Hazard/Trap" creatureType
         this.stats.data.details.creatureType.push("Trap")
@@ -561,6 +555,20 @@ class BestiaryService extends EventEmitter {
     getCreatureTypes () {
         return !!this.stats ? [...this.stats.data.details.creatureType] : []
     }
+
+    //Foundry vtt pf2e data does not actually have creature type data any longer but we still read from legacy exports.
+    //Given a beast's comma-separated system.details.creatureType value
+    //return an array with lower case creature types
+    simpleCreatureTypes(commaSeparatedCreatureTypes) {
+        if (!commaSeparatedCreatureTypes || typeof commaSeparatedCreatureTypes !== 'string')
+            return []
+        console.log(commaSeparatedCreatureTypes)
+        return commaSeparatedCreatureTypes
+                .split(",")
+                .map(str => str.trim().toLowerCase())
+                .filter(str => str !== "")
+    }
+
 
     loadSources() {
         let fieldParts = [
@@ -772,9 +780,17 @@ class BestiaryService extends EventEmitter {
                 }
             })
         }
+
         let languages = this.parseSimpleArray(customJSON.languages)
-        let traits = this.parseSimpleArray(customJSON.traits)
-    
+
+        //put the legacy comma-separated creatureType values into the traits (that's how we want it in remaster)
+        let customBeastTraits = this.parseSimpleArray(customJSON.traits)
+        let beastCreatureTypes = this.simpleCreatureTypes(customJSON?.creatureType)
+        beastCreatureTypes.forEach(t => {
+            if (!customBeastTraits.includes(t))
+                customBeastTraits.push(t)
+        })
+
         let items = []
     
         // Actions
@@ -1186,7 +1202,6 @@ class BestiaryService extends EventEmitter {
                         "value": !!customJSON.alignment ? customJSON.alignment.toUpperCase() : "",
                     },
                     "blurb": "",
-                    "creatureType": !!customJSON.type ? this.capitalize(customJSON.type) : "",
                     "level": {
                         "value": !!customJSON.level || customJSON.level == 0 ? Number(customJSON.level) : -1
                     },
@@ -1229,7 +1244,7 @@ class BestiaryService extends EventEmitter {
                     "size": {
                         "value": !!customJSON.size ? this.sizeConvert(customJSON.size.toLowerCase()) : 'med'
                     },
-                    "value": traits
+                    "value": customBeastTraits
                 }
             },
             "items": items,

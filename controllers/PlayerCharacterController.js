@@ -267,7 +267,6 @@ export class PlayerCharacterController extends DefaultController {
                 adv: !!stats.adv,
                 level: !!stats.level ? stats.level : 1,
                 rarity: 'unique',
-                alignment: !!stats.alignment ? stats.alignment : 'NN',
                 size: !!stats.size ? stats.size : 'medium',
                 traits: ['humanoid'], // TODO add ancestry
                 languages: ['common'], // TODO add languages

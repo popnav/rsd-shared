@@ -231,7 +231,6 @@ export class MembersController extends DefaultController {
                     level: !!member.level ? member.level : 1,
                     name: !!member.name ? member.name : '',
                     rarity: 'unique',
-                    alignment: !!member.alignment ? member.alignment : 'NN',
                     size: !!member.size ? member.size : 'medium',
                     traits: ['humanoid'], // TODO add ancestry
                     languages: ['common'], // TODO add languages

@@ -128,21 +128,27 @@
                         :trait="combatant.object.rarity" 
                         :custom_class="$rsd.format.rarityColor(combatant.object.rarity)" 
                     />
-                    <BaseTraitChip v-if="combatant.type != 'hazard'" :trait="combatant.object.alignment" :custom_class="'blue lighten-1'" />
+                    <BaseTraitChip
+                        v-if="combatant.type != 'hazard'"
+                        v-for="trait in alignmentLikeTraits(combatant.object.traits)"
+                        :key="'trait-'+trait"
+                        :trait="trait"
+                        :custom_class="$rsd.format.traitColor(trait)"
+                    />
                     <BaseTraitChip :trait="combatant.object.size" :custom_class="'green darken-1'" />
                     <BaseTraitChip 
-                        v-for="trait in combatant.object.traits" 
+                        v-for="trait in otherTraits(combatant.object.traits)"
                         :key="'trait-'+trait" 
                         :trait="trait"
-                        :custom_class="$rsd.format.rarityColor(trait)"
+                        :custom_class="$rsd.format.traitColor(trait)"
                     />
                 </div>
                 <!-- TODO: Add for PC's when able -->
                 <div v-else-if="!combatant.object && !restricted" class="my-1" :class="!!compact ? 'd-none' : 'd-flex'">
-                    <BaseTraitChip :trait="'NN'" :custom_class="'blue lighten-1'" />
+                    <BaseTraitChip :trait="'Neutral'" :custom_class="$rsd.format.traitColor('Neutral')" />
                     <BaseTraitChip :trait="'Medium'" :custom_class="'green darken-1'" />
-                    <BaseTraitChip :trait="'human'" :custom_class="$rsd.format.rarityColor('human')" />
-                    <BaseTraitChip :trait="'humanoid'" :custom_class="$rsd.format.rarityColor('humanoid')" />
+                    <BaseTraitChip :trait="'human'" :custom_class="$rsd.format.traitColor('human')" />
+                    <BaseTraitChip :trait="'humanoid'" :custom_class="$rsd.format.traitColor('humanoid')" />
                 </div>
 
                 <!-- Header text -->
@@ -251,7 +257,12 @@ import StatsSpellcasting from './components/StatsSpellcasting'
 
 import ConditionCard from './components/ConditionCard'
 
+import AlignmentMixin from '@root/.shared/mixin/AlignmentMixin'
+
 export default {
+    mixins: [
+        AlignmentMixin,
+    ],
     components: {
         BaseTraitChip,
         CombatNote,

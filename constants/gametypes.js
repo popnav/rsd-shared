@@ -62,3 +62,15 @@ export const conditionTypes = [
     {type: 'unnoticed', value: 'unnoticed', text: 'Unnoticed'},
     {type: 'wounded', value: 'wounded', text: 'Wounded'},
 ]
+
+export const SIZE_CATEGORIES = ['tiny','small','medium','large','huge','gargantuan']
+
+//traits
+//these first three consts are from
+//https://github.com/foundryvtt/pf2e/blob/fdc144d0ca5cfd207aa1832ef15c0eb263f1ae3d/src/scripts/config/traits.ts
+//TODO: we should start importing these (first three consts) from vtt pf2e data rather than hard-coding them here
+export const ELEMENT_TRAITS = ['air','earth','fire','metal','water','wood']
+export const ENERGY_DAMAGE_TYPES_TRAITS = ['acid','cold','electricity','fire','force','sonic','vitality','void']
+export const SANCTIFICATION_TRAITS = ['holy','unholy']
+//many of the below alignments (especially towards the end of the list) are legacy and will probably be removed soon
+export const ALIGNMENT_TRAITS = ['evil','good','chaotic','lawful','neutral','n','g','nn','ne','lg','ln','le','cg','ce','cn']

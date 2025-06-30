@@ -10,7 +10,7 @@
                 v-for="trait in current.object.traits" 
                 :key="'trait-'+trait" 
                 :trait="trait"
-                :custom_class="$rsd.format.rarityColor(trait)"
+                :custom_class="$rsd.format.traitColor(trait)"
             />
         </div>
         <div>
