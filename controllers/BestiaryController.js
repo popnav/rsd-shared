@@ -1,5 +1,6 @@
 import { BestiaryService, isGM  } from '@/services'
 import { DefaultController } from './DefaultController'
+import { ELEMENT_TRAITS, ENERGY_DAMAGE_TYPES_TRAITS, SANCTIFICATION_TRAITS, ALIGNMENT_TRAITS } from '../constants/gametypes'
 
 const ERRCODES = {
     0: 'B00', // Error: value is not valid, a string or longer than 0.
@@ -93,7 +94,6 @@ export class BestiaryController extends DefaultController {
                 _id: bid,
                 name: this.getName(bid),
                 level: level + (modifier/2),
-                alignment: !!beast.system.details && !!beast.system.details.alignment ? beast.system.details.alignment.value : null,
                 size: !!beast.system.traits.size.value ? this.$rsd.format.sizeBeautify(beast.system.traits.size.value) : null,
                 rarity: !!beast.system.traits.rarity && beast.system.traits.rarity != "common" ? beast.system.traits.rarity : null,
                 traits: !!beast.system.traits.value ? beast.system.traits.value : null,
@@ -431,15 +431,28 @@ export class BestiaryController extends DefaultController {
         return returnItem
     }
 
-    getType(bid) {
-        if (!!bid && typeof(bid) == 'string' && bid.length > 0) {
-            let beast = this.get(bid)
-            let type = !!beast && !!beast.system && !!beast.system.details && !!beast.system.details.creatureType ? beast.system.details.creatureType : null
-            type = type || (!!beast && !!beast.system && !!beast.system.traits && !!beast.system.traits.value && beast.system.traits.value.length > 0 ? beast.system.traits.value[0] : null)
-            return type
-        } else {
+    //the creatureType isn't a thing any longer, since the remaster.
+    //It's still nice to try to describe it to the user if possible.
+    //We're giving this a shot: we make an attempt to determine the beast type based on traits that don't describe other
+    //things like sanctification or alignment.
+    getCreatureType(bid) {
+        let allBeastTraits
+        if (!!bid && typeof(bid) == 'string' && bid.length > 0)
+            allBeastTraits = this.get(bid)?.system?.traits?.value
+        if (!allBeastTraits)
             return null
-        }
+
+        let beastTraits = []
+        allBeastTraits.forEach(trait => {
+            if (!ELEMENT_TRAITS.includes(trait)
+                && !ENERGY_DAMAGE_TYPES_TRAITS.includes(trait)
+                && !SANCTIFICATION_TRAITS.includes(trait)
+                && !ALIGNMENT_TRAITS.includes(trait)
+               )
+               beastTraits.push(trait)
+        })
+
+        return beastTraits?.join(',')
     }
 
     _convertTypeArray(array) {

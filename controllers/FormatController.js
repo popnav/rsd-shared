@@ -1,4 +1,5 @@
 import { DefaultController } from './DefaultController'
+import { SANCTIFICATION_TRAITS, ALIGNMENT_TRAITS } from '../constants/gametypes'
 
 const ERRCODES = {
     0: 'F00', // Error: value is not valid, a string or longer than 0.
@@ -110,6 +111,26 @@ export class FormatController extends DefaultController {
         } else {
             this.error(ERRCODES[1],`Error: size is not valid, a string or longer than 0.`)
             return null
+        }
+    }
+
+    otherLegacyColor() {
+        return "purple lighten-1 white--text"
+    }
+
+    //double-duty for trait and legacy alignment since remaster has holy and unholy in traits and
+    //we'll eventually remove legacy alignment (NN/CE/LG...) handling
+    traitColor(trait) {
+        if (!!trait && typeof(trait) == 'string' && trait.length > 0) {
+            let traitLower = trait.toLowerCase()
+            if (SANCTIFICATION_TRAITS.includes(traitLower) || 'sanctified' === traitLower) {
+                return "blue lighten-1 white--text"
+            } else if (ALIGNMENT_TRAITS.includes(traitLower)) {
+                //due to certain amount of similarity for the concept, this is similar color as sanctification alignment
+                return "blue lighten-3 white--text"
+            } else {
+                return "main lighten-1 white--text"
+            }
         }
     }
 

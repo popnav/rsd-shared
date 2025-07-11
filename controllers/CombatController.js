@@ -208,7 +208,7 @@ export class CombatController extends DefaultController {
         let adjustment = !!member['adj'] ? member['adj'] : false
         let identifier = !!adjustment && adjustment != 'normal' ? this.$rsd.format.capitalize(adjustment) + ' ' : ''
         if (member.type == 'npc') {
-            identifier += !!member.bid ? this.$rsd.format.capitalize(this.$rsd.bestiary.getType(member.bid)) : member.name
+            identifier += !!member.bid ? this.$rsd.format.capitalize(this.$rsd.bestiary.getCreatureType(member.bid)) : member.name
             identifier += ` (${member.id.substr(0,3)})`
         } else if (member.type == 'hazard') {
             identifier += 'Hazard'

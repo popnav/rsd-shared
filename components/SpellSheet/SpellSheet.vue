@@ -29,12 +29,12 @@
                 v-for="trait in spell.system.traits.value" 
                 :key="'trait-'+trait" 
                 :trait="trait"
-                :custom_class="$rsd.format.rarityColor(trait)"
+                :custom_class="$rsd.format.traitColor(trait)"
             />
             <BaseTraitChip 
                 v-if="!!spell.system.school" 
                 :trait="spell.system.school.value"
-                :custom_class="$rsd.format.rarityColor(spell.system.school.value)"
+                :custom_class="$rsd.format.otherLegacyColor(spell.system.school.value)"
             />
         </div>
 

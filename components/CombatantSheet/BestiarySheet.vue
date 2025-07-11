@@ -4,14 +4,14 @@
         v-if="!!visible && !!bestiary"
         :class="containerClass + (!!rsd.darkmode ? ' theme--dark' : '')"
     >
-        
+
         <!-- Title -->
         <div class="d-flex flex-row align-center text-uppercase">
             <div class="d-flex flex-column">
                 <span class="text-h6 roboto-condensed mb-n1">{{bestiary.name}}</span>
                 <span class="text-subtitle-2 font-weight-regular icon_color--text mt-n1">
                     {{!!adjusted ? tindex.adj : ''}}
-                    {{bestiary.type == 'Hazard' ? 'Hazard' : $rsd.format.capitalize($rsd.bestiary.getType(bestiary._id))}}
+                    {{bestiary.type == 'Hazard' ? 'Hazard' : $rsd.format.capitalize($rsd.bestiary.getCreatureType(bestiary._id))}}
                 </span>
             </div>
             <v-spacer></v-spacer>
@@ -30,21 +30,26 @@
                 :trait="bestiary.rarity" 
                 :custom_class="$rsd.format.rarityColor(bestiary.rarity)" 
             />
-            <BaseTraitChip :trait="bestiary.alignment" :custom_class="'blue lighten-1'" />
+            <BaseTraitChip
+                v-for="trait in alignmentLikeTraits(bestiary.traits)"
+                :key="'trait-'+trait"
+                :trait="trait"
+                :custom_class="$rsd.format.traitColor(trait)"
+            />
             <BaseTraitChip :trait="bestiary.size" :custom_class="'green darken-1'" />
-            <BaseTraitChip 
-                v-for="trait in bestiary.traits" 
+            <BaseTraitChip
+                v-for="trait in otherTraits(bestiary.traits)"
                 :key="'trait-'+trait" 
                 :trait="trait"
-                :custom_class="$rsd.format.rarityColor(trait)"
+                :custom_class="$rsd.format.traitColor(trait)"
             />
         </div>
         <!-- TODO: Add for PC's when able -->
         <div v-else class="my-1" :class="!!compact ? 'd-none' : 'd-flex'">
-            <BaseTraitChip :trait="'NN'" :custom_class="'blue lighten-1'" />
+            <BaseTraitChip :trait="'Neutral'" :custom_class="$rsd.format.traitColor('Neutral')" />
             <BaseTraitChip :trait="'Medium'" :custom_class="'green darken-1'" />
-            <BaseTraitChip :trait="'human'" :custom_class="$rsd.format.rarityColor('human')" />
-            <BaseTraitChip :trait="'humanoid'" :custom_class="$rsd.format.rarityColor('humanoid')" />
+            <BaseTraitChip :trait="'human'" :custom_class="$rsd.format.traitColor('human')" />
+            <BaseTraitChip :trait="'humanoid'" :custom_class="$rsd.format.traitColor('humanoid')" />
         </div>
 
         <!-- Header text -->
@@ -112,7 +117,12 @@ import StatsSpellcasting from './components/StatsSpellcasting.vue'
 
 import ConditionCard from './components/ConditionCard'
 
+import AlignmentMixin from '@root/.shared/mixin/AlignmentMixin'
+
 export default {
+    mixins: [
+        AlignmentMixin,
+    ],
     components: {
         BaseTraitChip,
         ConditionCard,

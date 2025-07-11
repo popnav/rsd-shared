@@ -12,6 +12,9 @@ export default {
                 sizeBeautify: (size) => {
                     return !!size ? this.m_FormatSizeBeautify(size) : null
                 },
+                traitColor: (trait) => {
+                    return !!trait ? this.m_FormatTraitColor(trait) : null
+                },
                 rarityColor: (trait) => {
                     return !!trait ? this.m_FormatRarityColor(trait) : null
                 },
@@ -43,6 +46,10 @@ export default {
             return item.charAt(0).toUpperCase() + item.slice(1)
         },
 
+        m_CreatureType(item) {
+            return item.charAt(0).toUpperCase() + item.slice(1)
+        },
+
         m_FormatSizeBeautify(size) {
             switch(size) {
                 case 'tiny':
@@ -59,6 +66,18 @@ export default {
                     return 'Gargantuan'
             }
         },
+
+//NEEDED?  I added this when I saw m_FormatRarityColorTrait- but I am unconvinced this (and
+// any of these others) are used from here- they seem to be used from the FormatController code.
+// Maybe the intent was to migrate to one or the other and one of these ways of doing it should
+// be removed.
+//        m_FormatTraitColor(trait) {
+//            if (trait == 'holy' || trait == 'unholy') {
+//                return "blue lighten-1 white--text"
+//            } else {
+//                return "black white--text"
+//            }
+//        },
 
         m_FormatRarityColor(trait) {
             if (trait == 'uncommon') {
