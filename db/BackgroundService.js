@@ -22,6 +22,10 @@ class BackgroundService extends EventEmitter {
         get('backgrounds').then(val => {
             if (val) {
                 this.array = val
+                    .filter(v => v.type === 'background')
+                    //check for type due to quality of early sf2e data
+
+                this.array.sort((a, b) => a.name.localeCompare(b.name));
 
                 this.emit('Set')
             }

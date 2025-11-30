@@ -68,8 +68,8 @@
                                         <span
                                             :class="!!member.stats.perception.modified ? 'red--text font-weight-medium' : ''"
                                         >
-                                            <span v-if="member.stats.perception.value >= 0">+</span>
-                                            <span>{{member.stats.perception.value}};</span>
+                                            <span v-if="member.stats.perception.mod >= 0">+</span>
+                                            <span>{{member.stats.perception.mod}};</span>
                                         </span>
                                     </span>
                                 </v-row>

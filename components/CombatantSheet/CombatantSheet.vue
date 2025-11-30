@@ -157,7 +157,7 @@
                         <span class="font-weight-bold mr-1">Source</span>
                         <span>{{combatant.object.source}}</span>
                     </span>
-                    <StatsPerception v-if="!!combatant.stats && !!combatant.stats.perception && combatant.stats.perception.value != null" :perception="combatant.stats.perception" :senses="combatant.object.senses" :cidentifier="combatant.identifier" />
+                    <StatsPerception v-if="!!combatant.stats && !!combatant.stats.perception && combatant.stats.perception.mod != null" :perception="combatant.stats.perception" :senses="combatant.object.senses" :cidentifier="combatant.identifier" />
                     <StatsStealth v-else-if="!!combatant.stats && !!combatant.stats.stealth && combatant.stats.stealth.value != null" :stealth="combatant.stats.stealth" :cidentifier="combatant.identifier" :dc="combatant.type == 'hazard'" />
                     <StatsLanguages :languages="combatant.object.languages" v-show="!compact" />
                     <StatsSkills v-if="combatant.type != 'hazard'" :skills="combatant.stats" :cidentifier="combatant.identifier" />

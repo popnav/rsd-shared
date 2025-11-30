@@ -10,17 +10,17 @@
                     v-bind="attrs"
                     v-on="on"
                     :class="!!perception.modified ? 'red--text font-weight-medium' : ''"
-                    @click="roll(perception.value)"    
+                    @click="roll(perception.mod)"
                     class="pointer"
                 >
-                    <span v-if="perception.value >= 0">+</span>
-                    <span class="mr-1">{{perception.value}};</span>
+                    <span v-if="perception.mod >= 0">+</span>
+                    <span class="mr-1">{{perception.mod}};</span>
                 </span>
             </template>
             <span v-if="!!results[`${cidentifier}-perception`]">
                     <span class="mr-1">Perception:</span>
                     <span class="mr-1">{{results[`${cidentifier}-perception`].total}}</span>
-                    <span>[{{results[`${cidentifier}-perception`].roll}}, {{skillValue(perception.value)}}]</span>
+                    <span>[{{results[`${cidentifier}-perception`].roll}}, {{skillValue(perception.mod)}}]</span>
                 </span>
             <span v-else>Click to roll a Perception check</span>
         </v-tooltip>

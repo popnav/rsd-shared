@@ -9,46 +9,69 @@ const octokit = new Octokit({
     userAgent: "ready-set-dice/v1.0.0",
 });
 
+//todo - see old code - should 'custom' (or 'custom_bestiary') be in both shared/APIService and BestiaryService?
+//todo - unsure about changes I made here - maybe should differ from APIService
+//todo - also unsure about whether certain bestiaries should have been included like fall_of_plaguestone
 const bestiaryURLEndings = [
     'bestiary1',
     'bestiary2',
     'bestiary3',
     'abomination_vaults_bestiary',
-    'agents_of_edgewatch_bestiary',
     'age_of_ashes_bestiary',
+    'agents_of_edgewatch_bestiary',
+    'battlecry_bestiary',
     'blog_bestiary',
     'blood_lords_bestiary',
     'book_of_the_dead_bestiary',
+    'claws_of_the_tyrant_bestiary',
     'crown_of_the_kobold_king_bestiary',
+    'curtain_call_bestiary',
     'extinction_curse_bestiary',
     'fall_of_plaguestone',
     'fists_of_the_ruby_phoenix_bestiary',
     'gatewalkers_bestiary',
-    'impossible_lands_bestiary',
+    'hazards_bestiary',
+    'howl_of_the_wild_bestiary',
+    'iconics',
+    'kingmaker_bestiary',
+    'lost_omens_bestiary',
     'malevolence_bestiary',
     'menace_under_otari_bestiary',
-    'monsters_of_myth_bestiary',
-    'mwangi_expanse_bestiary',
+    'myth_speaker_bestiary',
     'night_of_the_gray_death_bestiary',
-    'kingmaker_bestiary',
     'npc_gallery',
     'one_shot_bestiary',
     'outlaws_of_alkenstar_bestiary',
     'pathfinder_dark_archive',
+    'pathfinder_monster_core',
+    'pathfinder_monster_core_2',
+    'pathfinder_npc_core',
     'pfs_introductions_bestiary',
     'pfs_season_1_bestiary',
     'pfs_season_2_bestiary',
     'pfs_season_3_bestiary',
+    'pfs_season_4_bestiary',
+    'pfs_season_5_bestiary',
+    'pfs_season_6_bestiary',
+    'pfs_season_7_bestiary',
+    'prey_for_death_bestiary',
     'quest_for_the_frozen_flame_bestiary',
+    'rage_of_elements_bestiary',
+    'revenge_of_the_runelords_bestiary',
+    'rusthenge_bestiary',
+    'season_of_ghosts_bestiary',
+    'seven_dooms_for_sandpoint_bestiary',
+    'shades_of_blood_bestiary',
     'shadows_at_sundown_bestiary',
+    'spore_war_bestiary',
     'stolen_fate_bestiary',
     'strength_of_thousands_bestiary',
     'the_enmity_cycle_bestiary',
     'the_slithering_bestiary',
-    'travel_guide_bestiary',
+    'triumph_of_the_tusk_bestiary',
     'troubles_in_otari_bestiary',
-    'hazards_bestiary',
-    'custom_bestiary'
+    'war_of_immortals_bestiary',
+    'wardens_of_wildwood_bestiary',
 ]
 
 class BestiaryService extends EventEmitter {
@@ -545,6 +568,7 @@ class BestiaryService extends EventEmitter {
 
         // Fix the fact there is no "Hazard/Trap" creatureType
         this.stats.data.details.creatureType.push("Trap")
+        //todo - change sort to sort by... name? other?
         this.stats.data.details.creatureType.sort((a,b) => {
             return a.localeCompare(b)
         })
@@ -1189,9 +1213,6 @@ class BestiaryService extends EventEmitter {
                     "initiative": {
                         "ability": "perception"
                     },
-                    "perception": {
-                        "value": !!customJSON.perception && !!customJSON.perception.value ? Number(customJSON.perception.value) : 10
-                    },
                     "speed": {
                         "otherSpeeds": otherSpeeds,
                         "value": movespeed,
@@ -1202,6 +1223,11 @@ class BestiaryService extends EventEmitter {
                         "value": !!customJSON.alignment ? customJSON.alignment.toUpperCase() : "",
                     },
                     "blurb": "",
+                    "creatureType": !!customJSON.type ? this.capitalize(customJSON.type) : "",
+                    "languages": {
+                        "details": "",
+                        "value": languages
+                    },
                     "level": {
                         "value": !!customJSON.level || customJSON.level == 0 ? Number(customJSON.level) : -1
                     },
@@ -1210,6 +1236,9 @@ class BestiaryService extends EventEmitter {
                     "source": {
                         "value": "Custom"
                     }
+                },
+                "perception": {
+                    "mod": !!customJSON.perception && !!customJSON.perception.mod ? Number(customJSON.perception.mod) : 10
                 },
                 "resources": {
                     "focus": {
@@ -1232,11 +1261,6 @@ class BestiaryService extends EventEmitter {
                     }
                 },
                 "traits": {
-                    "languages": {
-                        "custom": "",
-                        "selected": [],
-                        "value": languages
-                    },
                     "rarity": "common",
                     "senses": {
                         "value": !!customJSON.perception && !!customJSON.perception.note ? customJSON.perception.note : "",

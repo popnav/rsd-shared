@@ -25,11 +25,16 @@ class AncestryService extends EventEmitter {
         this.resetAncestries()
         get('ancestries').then(val => {
             if (val) {
-                this.ancestries = val.filter(v => v.name != '[Empty Ancestry]')
+                this.ancestries = val
+                    .filter(v => v.name != '[Empty Ancestry]')
+                    .filter(v => v.type === 'ancestry')
+                    //check for type due to quality of early sf2e data
 
                 Object.keys(this.ancestries).forEach(k => {
                     this.ancestries[k] = AncestryParser.parseAncestry(this.ancestries[k])
                 })
+
+                this.ancestries.sort((a, b) => a.name.localeCompare(b.name));
 
                 this.emit('Set')
             }

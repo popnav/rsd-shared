@@ -308,8 +308,8 @@ export class EncountersController extends DefaultController {
                 let initiativeBonus = 0;
                 let npcLevel = !!bestiary.system.details && !!bestiary.system.details.level && !!bestiary.system.details.level.value ? bestiary.system.details.level.value : -1
 
-                if (!!bestiary.system.attributes && !!bestiary.system.attributes.perception && !!bestiary.system.attributes.perception.value) {
-                    initiativeBonus = Number(bestiary.system.attributes.perception.value);
+                if (!!bestiary.system.attributes && !!bestiary.system.perception && !!bestiary.system.perception.mod) {
+                    initiativeBonus = Number(bestiary.system.perception.mod);
                 } else if (!!bestiary.system.attributes && !!bestiary.system.attributes.stealth && !!bestiary.system.attributes.stealth.value) {
                     initiativeBonus = Number(bestiary.system.attributes.stealth.value);
                 }

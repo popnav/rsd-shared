@@ -37,11 +37,16 @@ class ClassService extends EventEmitter {
         this.resetClasses()
         get('classes').then(val => {
             if (val) {
-                this.classes = val.filter(v => v.name != '[Empty Class]')
+                this.classes = val
+                    .filter(v => v.name != '[Empty Class]')
+                    .filter(v => v.type === 'class')
+                    //check for type due to quality of early sf2e data
 
                 Object.keys(this.classes).forEach(k => {
                     this.classes[k] = ClassParser.parseClass(this.classes[k])
                 })
+
+                this.classes.sort((a, b) => a.name.localeCompare(b.name));
 
                 this.emit('Set')
 

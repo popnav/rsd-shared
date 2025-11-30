@@ -99,14 +99,14 @@ export class BestiaryController extends DefaultController {
                 traits: !!beast.system.traits.value ? beast.system.traits.value : null,
                 source: !!beast.system.details && !!beast.system.details.source && !!beast.system.details.source.value ? beast.system.details.source.value : 
                 (!!beast.system.source && !!beast.system.source.value ? beast.system.source.value : null),
-                perception: !!beast.system.attributes.perception && !!beast.system.attributes.perception.value 
-                ? {value: beast.system.attributes.perception.value + modifier} : null,
+                perception: !!beast.system.perception && !!beast.system.perception.mod
+                ? {value: beast.system.perception.mod + modifier} : null,
                 stealth: !!beast.system.attributes.stealth && !!beast.system.attributes.stealth.value 
                 ? beast.system.attributes.stealth.value + modifier : null,
                 senses:  !!beast.system.traits.senses && !!beast.system.traits.senses.value
                 ? this._getSenses(beast) : null,
-                languages: !!beast.system.traits.languages && !!beast.system.traits.languages.value
-                ? beast.system.traits.languages.value : null,
+                languages: !!beast.system.details.languages && !!beast.system.details.languages.value
+                ? beast.system.details.languages.value : null,
                 core: !!beast.system.abilities ? beast.system.abilities : null,
                 hpmax: !!beast.system.attributes && !!beast.system.attributes.hp ? {value: this._getModifiedHP(beast.system.attributes.hp.max, level, modifier)} : null,
                 hpinfo: !!beast.system.traits
@@ -191,7 +191,7 @@ export class BestiaryController extends DefaultController {
             returnObject = {
                 ac: !!beast.system.attributes && !!beast.system.attributes.ac && !!beast.system.attributes.ac.value ? beast.system.attributes.ac.value + modifier : null,
                 maxhp: !!beast.system.attributes && !!beast.system.attributes.hp && !!beast.system.attributes.hp.max ? this._getModifiedHP(beast.system.attributes.hp.max, level, modifier) : null,
-                perception: !!beast.system.attributes.perception && !!beast.system.attributes.perception.value ? beast.system.attributes.perception.value + modifier : null,
+                perception: !!beast.system.perception && !!beast.system.perception.mod ? beast.system.perception.mod + modifier : null,
                 saves: [
                     !!beast.system.saves && !!beast.system.saves.fortitude && !!beast.system.saves.fortitude.value ? beast.system.saves.fortitude.value + modifier : null,
                     !!beast.system.saves && !!beast.system.saves.reflex && !!beast.system.saves.reflex.value ? beast.system.saves.reflex.value + modifier : null,
@@ -217,8 +217,8 @@ export class BestiaryController extends DefaultController {
     getInitiative(beast) {
         if (!!beast && !!beast.system) {
             let initiativeBonus = 0;
-            if (!!beast.system.attributes && !!beast.system.attributes.perception && !!beast.system.attributes.perception.value) {
-                initiativeBonus = Number(beast.system.attributes.perception.value);
+            if (!!beast.system.attributes && !!beast.system.perception && !!beast.system.perception.mod) {
+                initiativeBonus = Number(beast.system.perception.mod);
             } else if (!!beast.system.attributes && !!beast.system.attributes.stealth && !!beast.system.attributes.stealth.value) {
                 initiativeBonus = Number(beast.system.attributes.stealth.value);
             }
